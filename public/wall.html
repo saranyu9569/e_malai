@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#3a0d14" />
+  <title>พวงมาลัยรวม · จอพิธี</title>
+  <style>
+    :root { --gold: #d9b46a; --maroon: #7a1f2b; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      background: radial-gradient(circle at 50% 30%, #5a1622 0%, #360b12 55%, #24070c 100%);
+      color: #fff; font-family: "Kanit", "Sarabun", "Noto Sans Thai", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    #stage { position: fixed; inset: 0; }
+
+    #ring {
+      position: absolute; left: 50%; top: 50%;
+      width: 0; height: 0;
+      transform: translate(-50%, -50%);
+      animation: sway 7s ease-in-out infinite;
+      transform-origin: 50% -31vmin;
+    }
+    @keyframes sway { 0%,100% { rotate: -2deg; } 50% { rotate: 2deg; } }
+
+    .hanger {
+      position: absolute; left: 50%; top: -31vmin;
+      width: 3px; height: 6vmin; margin-left: -1.5px;
+      background: linear-gradient(#f0d9a8, #c9a24a);
+      border-radius: 2px;
+    }
+    .hanger::before {
+      content: ""; position: absolute; left: 50%; top: -1.4vmin;
+      width: 2.6vmin; height: 2.6vmin; margin-left: -1.3vmin;
+      border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffe9b8, #c9a24a);
+    }
+
+    .flower {
+      position: absolute; left: 50%; top: 50%;
+      font-size: var(--fs, 4.2vmin); line-height: 1;
+      transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--r));
+      filter: hue-rotate(var(--hue, 0deg)) saturate(1.15) drop-shadow(0 2px 5px rgba(0,0,0,.45));
+      will-change: transform;
+      transition: transform .55s cubic-bezier(.2,.7,.3,1), font-size .4s ease;
+    }
+    #ring.dense .flower { transition: none; }
+    .flower.pop { animation: pop .9s cubic-bezier(.2,1.4,.4,1) both; }
+    @keyframes pop {
+      0% { transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(0) rotate(var(--r)); }
+      60% { transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(1.35) rotate(var(--r)); }
+      100% { transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(1) rotate(var(--r)); }
+    }
+
+    /* อุบะ (พู่ห้อยด้านล่างพวงมาลัย) */
+    .tassel {
+      position: absolute; left: 50%; top: 50%;
+      width: 2px; height: var(--len, 8vmin);
+      margin-left: -1px;
+      background: linear-gradient(#f0d9a8, #c9a24a); border-radius: 2px;
+      transform-origin: 50% 0;
+      transform: translate(var(--x), var(--y)) rotate(var(--r, 0deg));
+      transition: transform .55s cubic-bezier(.2,.7,.3,1), height .4s ease;
+      animation: tsway 4.5s ease-in-out infinite;
+    }
+    .tassel::after {
+      content: "❁"; position: absolute; left: 50%; bottom: -1.6vmin;
+      transform: translateX(-50%); font-size: 3vmin;
+      filter: hue-rotate(var(--hue, 0deg)) saturate(1.2) drop-shadow(0 2px 3px rgba(0,0,0,.4));
+    }
+    .tassel:nth-child(2n) { animation-duration: 3.7s; animation-delay: -1.2s; }
+    .tassel:nth-child(3n) { animation-duration: 5.1s; animation-delay: -2.4s; }
+    @keyframes tsway { 0%,100% { rotate: -6deg; } 50% { rotate: 6deg; } }
+
+    #center {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center; pointer-events: none; width: 56vmin;
+    }
+    #center .mark { font-size: 13vmin; color: var(--gold); line-height: 1;
+      text-shadow: 0 3px 18px rgba(0,0,0,.5); }
+    #sub1 { margin-top: 1.6vmin; font-size: 2.7vmin; font-weight: 600; color: #ffe9c7; }
+    #sub2 { font-size: 2.1vmin; color: #e8c9a0; opacity: .85; }
+
+    #titlebar {
+      position: absolute; left: 0; right: 0; top: 3vmin; text-align: center;
+      font-size: 3.2vmin; letter-spacing: .06em; color: #ffe9c7;
+      text-shadow: 0 2px 10px rgba(0,0,0,.5);
+    }
+
+    #latest {
+      position: absolute; left: 50%; bottom: 5vmin; transform: translateX(-50%);
+      font-size: 2.6vmin; color: #fff; opacity: 0; transition: opacity .4s;
+      background: rgba(0,0,0,.28); padding: 1vmin 2.6vmin; border-radius: 999px;
+      border: 1px solid rgba(217,180,106,.4); white-space: nowrap;
+    }
+    #latest.show { opacity: 1; }
+
+    #hint {
+      position: absolute; right: 3vmin; bottom: 3vmin; font-size: 1.9vmin;
+      color: #e8c9a0; opacity: .7;
+    }
+    #offline {
+      position: absolute; left: 3vmin; bottom: 9vmin; font-size: 1.9vmin;
+      color: #ff9c9c; opacity: 0; transition: opacity .3s;
+    }
+    #offline.show { opacity: 1; }
+
+    #send-all {
+      position: absolute; left: 3vmin; bottom: 3vmin;
+      font: inherit; font-size: 2.1vmin; font-weight: 600;
+      color: #3a0d14; background: linear-gradient(#ffe9b8, #d9b46a);
+      border: 1px solid #b7924d; border-radius: 999px;
+      padding: 1.2vmin 2.8vmin; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    }
+    #send-all:active { transform: translateY(1px); }
+    #send-all[disabled] { opacity: .5; cursor: default; }
+
+    #flash {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.9);
+      font-size: 3.4vmin; font-weight: 700; color: #fff;
+      background: rgba(122,31,43,.92); border: 2px solid var(--gold);
+      padding: 2.4vmin 4vmin; border-radius: 18px; text-align: center;
+      opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s;
+    }
+    #flash.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+    @media (prefers-reduced-motion: reduce) {
+      #ring, .tassel { animation: none; }
+      .flower.pop { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="titlebar">พวงมาลัยรวมน้ำใจศิษย์</div>
+
+  <div id="stage">
+    <div id="ring">
+      <div class="hanger"></div>
+      <!-- flowers injected here -->
+    </div>
+    <div id="center">
+      <div class="mark">๛</div>
+      <div id="sub1">คณะวิทยาศาสตร์และเทคโนโลยี</div>
+      <div id="sub2">มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ</div>
+    </div>
+  </div>
+
+  <div id="latest"></div>
+  <div id="flash"></div>
+  <div id="hint">เติมดอกไม้ได้จากหน้านักศึกษา/กรรมการ</div>
+  <div id="offline">การเชื่อมต่อหลุด — กำลังลองใหม่…</div>
+  <button id="send-all">🙏 ส่งพวงมาลัยรวมให้อาจารย์ทุกคน</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="wall.js"></script>
+</body>
+</html>

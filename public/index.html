@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#7a1f2b" />
+  <title>E-มาลัย · ส่งพวงมาลัยถึงอาจารย์</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ocean" aria-hidden="true">
+    <div class="ripple"></div>
+    <div class="wave wave-top"></div>
+    <div class="wave wave-back"></div>
+    <div class="wave wave-mid"></div>
+    <div class="wave wave-front"></div>
+  </div>
+
+  <div id="app">
+
+    <!-- 1. เลือกบทบาท -->
+    <section class="screen active" id="screen-role">
+      <div class="brand">
+        <div class="brand-mark">๛</div>
+        <h1>E-มาลัย</h1>
+        <p class="brand-sub">ส่งพวงมาลัยกราบครูอาจารย์ แบบเรียลไทม์</p>
+        <p class="brand-sub brand-org">คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ</p>
+        <p class="brand-sub brand-year" id="year-line" title="กดย้ำ ๆ เพื่อแก้ไขปีการศึกษา">ปีการศึกษา <span id="year-val">2569</span></p>
+      </div>
+      <div class="role-buttons">
+        <button class="role-btn" data-role="student">
+          <span class="role-emoji">🎒</span>
+          <span class="role-label">นักศึกษา</span>
+        </button>
+        <button class="role-btn" data-role="teacher">
+          <span class="role-emoji">👩‍🏫</span>
+          <span class="role-label">อาจารย์</span>
+        </button>
+        <button class="role-btn" data-role="committee" id="role-committee">
+          <span class="role-emoji">🎖️</span>
+          <span class="role-label">กรรมการ <span class="role-count" id="committee-counter">0/5</span></span>
+        </button>
+      </div>
+      <a class="link-btn wall-link" href="/wall" target="_blank" rel="noopener">🖥️ เปิดจอพวงมาลัยรวม (จอพิธี)</a>
+      <p class="conn-note" id="conn-note">กำลังเชื่อมต่อ…</p>
+    </section>
+
+    <!-- 2. ใส่ชื่อ-นามสกุล -->
+    <section class="screen" id="screen-name">
+      <button class="back-btn" data-back="screen-role">‹ กลับ</button>
+      <h2 id="name-title">กรอกชื่อ</h2>
+      <form id="name-form" autocomplete="off">
+        <label>ชื่อ
+          <input type="text" id="first-name" inputmode="text" maxlength="40" placeholder="เช่น สมชาย" required />
+        </label>
+        <label>นามสกุล
+          <input type="text" id="last-name" inputmode="text" maxlength="40" placeholder="เช่น ใจดี" required />
+        </label>
+        <button type="submit" class="primary-btn" id="name-submit" disabled>ถัดไป</button>
+      </form>
+    </section>
+
+    <!-- 3. หน้านักศึกษา -->
+    <section class="screen" id="screen-student">
+      <header class="topbar">
+        <span id="student-hello">สวัสดี</span>
+        <button class="link-btn home-btn">กลับหน้าแรก</button>
+      </header>
+
+      <div class="stage" id="stage">
+        <div class="stage-hint" id="stage-hint">
+          เลือกพวงมาลัยและอาจารย์ก่อน<br />แล้วจึงปัดขึ้นเพื่อส่ง
+        </div>
+        <div class="garland-card" id="garland-card" hidden>
+          <img id="garland-card-img" alt="พวงมาลัยที่เลือก" />
+          <div class="swipe-cue">
+            <div class="arrow-up">↑</div>
+            <span id="swipe-text">ปัดขึ้นเพื่อส่ง</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="picker">
+        <div class="picker-head">
+          <h3>เลือกพวงมาลัย</h3>
+          <button class="mini-btn" id="open-editor">🎨 แต่งพวงมาลัย</button>
+        </div>
+        <div class="garland-strip" id="garland-strip"></div>
+
+        <h3>ส่งให้อาจารย์</h3>
+        <input type="search" id="teacher-search" inputmode="search" autocomplete="off"
+               placeholder="ค้นหาชื่ออาจารย์…" hidden />
+        <div class="teacher-list" id="teacher-list">
+          <p class="muted" id="no-teacher">ยังไม่มีอาจารย์ออนไลน์</p>
+        </div>
+
+        <button class="mini-btn wall-cta" data-wall-open>🌼 เติมดอกไม้ในพวงมาลัยรวม (จอพิธี)</button>
+      </div>
+
+      <div class="toast" id="toast" hidden></div>
+    </section>
+
+    <!-- 4. หน้าอาจารย์ -->
+    <section class="screen" id="screen-teacher">
+      <header class="topbar">
+        <span id="teacher-hello">สวัสดี</span>
+        <button class="link-btn home-btn">กลับหน้าแรก</button>
+      </header>
+
+      <!-- 4a. หน้ารอรับ -->
+      <div id="teacher-wait-view">
+        <div class="teacher-wait">
+          <div class="wait-ring"><span>🪷</span></div>
+          <p>กำลังรอรับพวงมาลัยจากลูกศิษย์…</p>
+          <p class="muted" id="teacher-count">ได้รับแล้ว 0 พวง</p>
+        </div>
+        <div class="garland-rack" id="garland-rack" aria-hidden="true"></div>
+        <div class="wait-actions">
+          <button class="link-btn" id="go-history">ดูประวัติที่ได้รับ</button>
+          <button class="link-btn" id="open-keepsake">🎴 การ์ดที่ระลึก</button>
+        </div>
+      </div>
+
+      <!-- 4b. หน้าประวัติทั้งหมด -->
+      <div id="teacher-history-view" hidden>
+        <button class="back-btn" id="back-to-wait">‹ กลับหน้ารอรับ</button>
+        <div class="history-head">
+          <h3>ประวัติที่ได้รับทั้งหมด</h3>
+          <span class="muted" id="history-count-label">0 พวง</span>
+        </div>
+        <div class="history-list" id="history-list">
+          <p class="muted" id="history-empty">ยังไม่มีใครส่งพวงมาลัยมา</p>
+        </div>
+        <button class="link-btn danger-link" id="clear-history" hidden>ล้างประวัติของฉัน</button>
+      </div>
+
+      <div class="toast" id="t-toast" hidden></div>
+
+      <div class="incoming" id="incoming" hidden>
+        <div class="incoming-inner">
+          <img id="incoming-img" alt="พวงมาลัยที่ได้รับ" />
+          <p class="incoming-from">จาก <strong id="incoming-from">—</strong></p>
+          <button class="primary-btn" id="incoming-dismiss">รับไว้ 🙏</button>
+        </div>
+      </div>
+
+      <div class="viewer" id="viewer" hidden>
+        <button class="viewer-close" id="viewer-close" aria-label="ปิด">✕</button>
+        <img id="viewer-img" alt="พวงมาลัย" />
+        <div class="viewer-cap">
+          <strong id="viewer-name">—</strong>
+          <span id="viewer-time"></span>
+        </div>
+        <button class="viewer-save" id="viewer-save">⬇ บันทึกรูปพวงมาลัย</button>
+      </div>
+
+      <div class="petal-burst" id="petal-burst" aria-hidden="true"></div>
+
+      <div class="keepsake" id="keepsake" hidden>
+        <button class="viewer-close" id="keepsake-close" aria-label="ปิด">✕</button>
+        <img id="keepsake-img" alt="การ์ดที่ระลึก" />
+        <button class="viewer-save" id="keepsake-save">⬇ บันทึกการ์ด</button>
+      </div>
+    </section>
+
+    <!-- 5. หน้ากรรมการ -->
+    <section class="screen" id="screen-committee">
+      <header class="topbar">
+        <span id="committee-hello">สวัสดี</span>
+        <button class="link-btn home-btn">กลับหน้าแรก</button>
+      </header>
+
+      <div id="committee-pick">
+        <div class="stage" id="c-stage">
+          <div class="stage-hint" id="c-stage-hint">เลือกพวงมาลัย แล้วปัดขึ้นเพื่อส่ง</div>
+          <div class="garland-card" id="c-garland-card" hidden>
+            <img id="c-garland-card-img" alt="พวงมาลัยที่เลือก" />
+            <div class="swipe-cue">
+              <div class="arrow-up">↑</div>
+              <span>ปัดขึ้นเพื่อส่งให้อาจารย์ทุกคน</span>
+            </div>
+          </div>
+        </div>
+        <div class="picker">
+          <div class="picker-head">
+            <h3>เลือกพวงมาลัย</h3>
+            <button class="mini-btn" id="c-open-editor">🎨 แต่งพวงมาลัย</button>
+          </div>
+          <div class="garland-strip" id="c-garland-strip"></div>
+          <p class="muted">พวงมาลัยจะถูกส่งให้อาจารย์ทุกคนที่ออนไลน์อยู่ตอนนั้น · ส่งได้ครั้งเดียว</p>
+          <button class="mini-btn wall-cta" data-wall-open>🌼 เติมดอกไม้ในพวงมาลัยรวม (จอพิธี)</button>
+        </div>
+      </div>
+
+      <div id="committee-done" hidden>
+        <div class="done-mark">🙏</div>
+        <p id="committee-done-text">ส่งเรียบร้อย</p>
+        <button class="primary-btn home-btn">กลับหน้าแรก</button>
+      </div>
+
+      <div class="toast" id="c-toast" hidden></div>
+    </section>
+
+  </div>
+
+  <!-- ตัวแต่งพวงมาลัย -->
+  <div class="editor" id="editor" hidden>
+    <div class="editor-top">
+      <button class="link-btn" id="editor-cancel">ยกเลิก</button>
+      <strong>แต่งพวงมาลัย</strong>
+      <button class="link-btn strong" id="editor-save">บันทึก</button>
+    </div>
+    <div class="editor-stage">
+      <canvas id="editor-canvas" width="480" height="800"></canvas>
+    </div>
+    <div class="editor-selected" id="editor-selected" hidden>
+      <label>ขนาด<input type="range" id="ed-size" min="0.2" max="4" step="0.02" value="1" /></label>
+      <label>หมุน<input type="range" id="ed-rot" min="0" max="360" step="1" value="0" /></label>
+      <button class="icon-btn" id="ed-flip" aria-label="กลับด้านซ้าย-ขวา" title="กลับด้านซ้าย-ขวา">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3" stroke-linecap="round"/>
+          <polygon points="3,5 10,12 3,19" fill="currentColor"/>
+          <polygon points="21,5 14,12 21,19" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="ed-forward" aria-label="เลื่อนขึ้นหน้า 1 ชั้น" title="เลื่อนขึ้นหน้า 1 ชั้น">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 15l6-6 6 6"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="ed-backward" aria-label="เลื่อนลงหลัง 1 ชั้น" title="เลื่อนลงหลัง 1 ชั้น">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </button>
+      <button class="icon-btn danger" id="ed-del" aria-label="ลบสติกเกอร์" title="ลบสติกเกอร์">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>
+        </svg>
+      </button>
+    </div>
+    <div class="editor-panel">
+      <div class="ed-label">เทมเพลตด่วน (แตะเพื่อใช้ทั้งชุด)</div>
+      <div class="ed-row" id="ed-templates"></div>
+
+      <div id="ed-base-section">
+        <div class="ed-label">พวงมาลัยพื้นฐาน</div>
+        <div class="ed-row" id="ed-bases"></div>
+      </div>
+
+      <div id="ed-adjust-section" hidden>
+        <div class="ed-label">ปรับแต่งชิ้นที่เลือก (สี / ความเข้ม / แสง / เงา / ความกลมรี)</div>
+        <div class="ed-adjust">
+          <div class="ed-adj-color">
+            <span class="ed-adj-caption">สี</span>
+            <span class="ed-stops" id="ed-stops"></span>
+          </div>
+          <label class="ed-checkbox"><input type="checkbox" id="ed-gradient" /> ไล่สี (เพิ่มได้ถึง 10 สี)</label>
+          <label id="ed-grad-angle-wrap" hidden>ทิศทางไล่สี<input type="range" id="ed-gradangle" min="0" max="360" step="1" value="90" /></label>
+          <label>ปริมาณสี<input type="range" id="ed-coloramt" min="0" max="1" step="0.02" value="0" /></label>
+          <label>ความเข้ม<input type="range" id="ed-sat" min="0.2" max="2" step="0.02" value="1" /></label>
+          <label>แสง<input type="range" id="ed-light" min="0.6" max="1.4" step="0.01" value="1" /></label>
+          <label>เงา<input type="range" id="ed-shadow" min="0" max="1" step="0.02" value="0.25" /></label>
+          <label>ความกลมรี<input type="range" id="ed-round" min="-0.5" max="0.5" step="0.01" value="0" /></label>
+          <button class="mini-btn" id="ed-adjreset">รีเซ็ตการปรับ</button>
+        </div>
+      </div>
+
+      <div class="ed-label">วางพวงมาลัย/รูป ทับเพิ่ม (แตะเพื่อเพิ่มเป็นเลเยอร์)</div>
+      <div class="ed-row" id="ed-layers"></div>
+
+      <div class="ed-label">สติกเกอร์ (แตะเพื่อเพิ่ม)</div>
+      <div class="ed-row" id="ed-stickers"></div>
+
+      <div class="ed-label">วาดมือ</div>
+      <div class="ed-row" id="ed-draw-row">
+        <button class="mini-btn" id="ed-pen">✏️ โหมดวาด</button>
+      </div>
+      <div class="ed-pen-tools" id="ed-pen-tools" hidden>
+        <label>สีปากกา<input type="color" id="ed-pen-color" value="#7a1f2b" /></label>
+        <label>ขนาดเส้น<input type="range" id="ed-pen-size" min="2" max="26" step="1" value="7" /></label>
+        <button class="mini-btn" id="ed-pen-undo">ลบเส้นล่าสุด</button>
+        <button class="mini-btn" id="ed-pen-clear">ล้างเส้นวาด</button>
+      </div>
+
+      <div class="editor-actions">
+        <button class="mini-btn" id="ed-undo">ลบชิ้นล่าสุด</button>
+        <button class="mini-btn" id="ed-reset">ล้างสติกเกอร์</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- พวงมาลัยรวม (จอพิธี) -->
+  <div class="wall-sheet" id="wall-sheet" hidden>
+    <div class="wall-card">
+      <button class="viewer-close" id="wall-close" aria-label="ปิด">✕</button>
+      <h3>เติมดอกไม้ในพวงมาลัยรวม</h3>
+      <p class="muted">ทุกคนเติมได้คนละ 1 ดอก แล้วไปปรากฏบนจอพิธีแบบเรียลไทม์</p>
+      <div class="wall-preview" id="wall-preview">🌼</div>
+      <div class="ed-row" id="wall-emoji"></div>
+      <label class="wall-hue-row">สีดอกไม้<input type="range" id="wall-hue" min="0" max="360" step="1" value="0" /></label>
+      <button class="primary-btn" id="wall-send">เติมดอกไม้ 🌸</button>
+      <a class="link-btn" id="wall-open" href="/wall" target="_blank" rel="noopener">เปิดจอพวงมาลัยรวม ↗</a>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="app/main.js"></script>
+</body>
+</html>

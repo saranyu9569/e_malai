@@ -1,0 +1,18 @@
+{
+  "name": "e-malai",
+  "version": "1.0.0",
+  "description": "ลากส่งพวงมาลัยจากนักศึกษาถึงอาจารย์ แบบเรียลไทม์ (เน้นใช้บนสมาร์ทโฟน)",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "loadtest": "node scripts/loadtest.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "lowdb": "^1.0.0",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.3"
+  }
+}
